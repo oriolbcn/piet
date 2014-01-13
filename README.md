@@ -12,15 +12,26 @@ This gem is named after the minimalist Dutch painter [Piet Mondrian](http://en.w
 Installation
 ------------
 
-This gem requires two image optimization utilities: **optipng** and
-**jpegoptim**, available in various platforms such as Unix or Windows.
+This gem uses the following image optimization utilties:
+* optipng
+* pngout
+* advpng
+* jpegoptim
+* jpegrescan (a script that uses jpegtran)
+
+All the tools are available in various platforms such as Unix or Windows.
 You can install them by following the instructions on each authors'
 page:
 
 * Installation for [optipng](http://optipng.sourceforge.net/)
+* Installation for [pngout] (http://advsys.net/ken/utils.htm)
+* Installation for [advpng] (http://advancemame.sourceforge.net/comp-readme.html)
 * Installation for [jpegoptim](http://freecode.com/projects/jpegoptim)
+* Information on [jpegtran] (http://jpegclub.org/jpegtran/) and [manual for unix] (http://www.gsp.com/cgi-bin/man.cgi?topic=jpegtran)
 
-After installing both utils, simply install the gem:
+If you are missing some of the tools (or the crash when executing), Piet will issue a warning and proceed with the rest of the tools, so you don't really need all of the tools if you just want to run a few of them. Also, you can specify which tools you want to run when using Piet.
+
+After installing the utils, simply install the gem:
 
     gem install piet
 
@@ -39,11 +50,29 @@ and then call the **optimize** method:
 Piet.optimize(path, opts)
 ```
 
-The options are:
+There are 2 kind of options, global and per-tool.
 
-* **verbose**: Whether you want to get the output of the command or not. It is interpreted as a Boolean value. Default: false.
+Global options are those that apply to all the tools or to Piet itself. Currently, Piet supports the following options:
 
-* **quality**: If you wanna add a compression, adjust the quality parameter. Valid values are any integer between 0 and 100 (100 means no compression and highest quality). Default: 100
+* **verbose**: Whether you want to get the output of the commands or not. It is interpreted as a Boolean value. Default: false.
+
+* **tools**: Array of symbols with the names of the tools you want to run. Array value. Default: All available tools.
+
+Per-tool options are specified as a hash and will be used only when executing the given tool:
+
+* **pngout**: Options for the pngout command. Hash value
+
+    * **strategy**: strategy used (-s option)
+
+* **advpng**: Options for the advpng command. Hash value
+
+    * **compression**: Factor of compression. Values can go from 0 to 4, where 0 is "don't compress" and 4 is "compress extreme".
+
+    * **iterations**: Number of iterations performed by the tools (-i option)
+
+* **jpegoptim**: Options for the jpegoptm command. Hash value
+
+    * **quality**: If you wanna add a compression, adjust the quality parameter. Valid values are any integer between 0 and 100 (100 means no compression and highest quality). Default: 100
 
 
 CarrierWave integration
@@ -163,3 +192,4 @@ Changelog
 * v.0.1.1 Added support for GIFs. Added an extra option to use pngquant (thanks @rogercampos). Solved problems with Carrierwave >= 0.6 (thanks @mllocs and @huacnlee).
 * v.0.1.2 Fixed some problems with missing processing, thanks to @lentg.
 * v.0.1.3 Use png_quantizator gem instead of the own implementation.
+* v.0.2 Added more tools and refactored structure. **NOTE: This version is not backwards compatible with the previous, since now it encapsulates the 'quality' option for jpegoptim in a hash corresponding to the options passed to this tool**
